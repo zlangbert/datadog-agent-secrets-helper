@@ -21,10 +21,17 @@ type secretsPayload struct {
 	Handles []string `json:"secrets"`
 }
 
+// parsed secret handle
 type secretHandle struct {
 	provider string
 	id       string
 	key      string
+}
+
+// result of evaluating a secret handle
+type secretResult struct {
+	Error string `json:"error,omitempty"`
+	Value string `json:"value,omitempty"`
 }
 
 func main() {
@@ -48,18 +55,21 @@ func main() {
 	}
 
 	// build secrets manager client
-	sess := session.Must(session.NewSession())
+	sess, err := session.NewSession()
+	if err != nil {
+		log.Fatalf("failed to create AWS session: %s", err)
+	}
 	manager := secretsmanager.New(sess)
 
-	//
-	res := map[string]map[string]string{}
+	// evaluate each handle
+	secretResults := map[string]secretResult{}
 	for _, h := range secrets.Handles {
 
 		// parse handle
 		handle, err := parseHandle(h)
 		if err != nil {
-			res[h] = map[string]string{
-				"error": fmt.Sprintf("error parsing secret handle: %v", err),
+			secretResults[h] = secretResult{
+				Error: fmt.Sprintf("error parsing secret handle: %v", err),
 			}
 			continue
 		}
@@ -69,8 +79,8 @@ func main() {
 			SecretId: &handle.id,
 		})
 		if err != nil {
-			res[h] = map[string]string{
-				"error": fmt.Sprintf("error getting secret: %v", err),
+			secretResults[h] = secretResult{
+				Error: fmt.Sprintf("error getting secret: %v", err),
 			}
 			continue
 		}
@@ -79,8 +89,8 @@ func main() {
 		var secretPayload map[string]string
 		err = json.Unmarshal([]byte(*secret.SecretString), &secretPayload)
 		if err != nil {
-			res[h] = map[string]string{
-				"error": fmt.Sprintf("error parsing secret value, expected object with string key/values: %v", err),
+			secretResults[h] = secretResult{
+				Error: fmt.Sprintf("error parsing secret value, expected object with string key/values: %v", err),
 			}
 			continue
 		}
@@ -88,18 +98,18 @@ func main() {
 		// get requested key from secret data
 		value := secretPayload[handle.key]
 		if value == "" {
-			res[h] = map[string]string{
-				"error": fmt.Sprintf("secret value for key '%s' is missing or blank", handle.key),
+			secretResults[h] = secretResult{
+				Error: fmt.Sprintf("secret value for key '%s' is missing or blank", handle.key),
 			}
 			continue
 		}
 
-		res[h] = map[string]string{
-			"value": value,
+		secretResults[h] = secretResult{
+			Value: value,
 		}
 	}
 
-	output, err := json.Marshal(res)
+	output, err := json.Marshal(secretResults)
 	if err != nil {
 		log.Fatalf("could not serialize result: %s", err)
 	}
