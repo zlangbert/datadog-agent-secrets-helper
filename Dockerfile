@@ -1,5 +1,5 @@
 # builder image
-FROM golang as builder
+FROM golang:1.12 as builder
 
 WORKDIR /workspace
 
