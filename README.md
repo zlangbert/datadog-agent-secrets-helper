@@ -1,5 +1,7 @@
 # AWS Secrets Manager Provider for the Datadog Agent
 
+[![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/zlangbert/datadog-secrets-provider-aws-secretsmanager.svg)](https://hub.docker.com/r/zlangbert/datadog-secrets-provider-aws-secretsmanager)
+
 The [Datadog Agent](https://github.com/DataDog/datadog-agent) often needs access to sensitive values in its 
 configuration to preform checks against protected resources. As check configuration is often stored in version control
 or accessible on the filesystem, the ability to securely store and use sensitive information in check configuration

@@ -24,7 +24,6 @@ func Resolve() {
 		Short: "Datadog agent secrets provider backed by AWS Secrets Manager",
 		Run: func(cmd *cobra.Command, args []string) {
 
-			// log.Printf("region: %v", cmd.Flag("region").Value.String())
 			region := cmd.Flag("region").Value.String()
 			creds := credentials.NewStaticCredentials(
 				cmd.Flag("access-key-id").Value.String(),
