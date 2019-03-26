@@ -24,14 +24,16 @@ func Resolve() {
 		Short: "Datadog agent secrets provider backed by AWS Secrets Manager",
 		Run: func(cmd *cobra.Command, args []string) {
 
-			region := cmd.Flag("region").Value.String()
-			creds := credentials.NewStaticCredentials(
-				cmd.Flag("access-key-id").Value.String(),
-				cmd.Flag("secret-access-key").Value.String(),
-				"",
-			)
+			config := &provider.AwsConfig{
+				Region: cmd.Flag("region").Value.String(),
+				Credentials: credentials.NewStaticCredentials(
+					cmd.Flag("access-key-id").Value.String(),
+					cmd.Flag("secret-access-key").Value.String(),
+					"",
+				),
+			}
 
-			resolve(region, creds)
+			resolve(config)
 		},
 	}
 
@@ -48,7 +50,7 @@ func Resolve() {
 	}
 }
 
-func resolve(region string, creds *credentials.Credentials) {
+func resolve(config *provider.AwsConfig) {
 
 	// ensure there is data being sent, otherwise the following read could hang waiting for input
 	stat, _ := os.Stdin.Stat()
@@ -69,10 +71,7 @@ func resolve(region string, creds *credentials.Credentials) {
 	}
 
 	// build provider
-	secretProvider, err := provider.NewAwsSecretsManagerProvider(
-		region,
-		creds,
-	)
+	secretProvider, err := provider.NewAwsSecretsManagerProvider(config)
 	if err != nil {
 		log.Fatalf("error initializing provider: %s", err)
 	}

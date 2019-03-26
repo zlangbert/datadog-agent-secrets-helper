@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/pkg/errors"
@@ -15,12 +14,12 @@ type AwsSecretsManagerProvider struct {
 	manager *secretsmanager.SecretsManager
 }
 
-func NewAwsSecretsManagerProvider(region string, creds *credentials.Credentials) (provider SecretProvider, err error) {
+func NewAwsSecretsManagerProvider(config *AwsConfig) (provider SecretProvider, err error) {
 
 	// build aws session
 	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String(region),
-		Credentials: creds,
+		Region:      aws.String(config.Region),
+		Credentials: config.Credentials,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create AWS session")
