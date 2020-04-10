@@ -6,11 +6,13 @@ import (
 	"github.com/zlangbert/datadog-agent-secrets-helper/pkg/secret"
 )
 
+// SecretProvider common provider interface
 type SecretProvider interface {
 	Resolve(handles []*secret.Handle) (results map[string]secret.Result)
 }
 
-func GetProvider(cfg *config.HelperConfig, id string) (p SecretProvider, err error)  {
+// GetProvider returns a instantiated provider based on id
+func GetProvider(cfg *config.HelperConfig, id string) (p SecretProvider, err error) {
 
 	switch id {
 	case "aws-sm":

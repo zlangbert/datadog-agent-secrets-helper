@@ -1,6 +1,7 @@
 # Datadog Agent Secrets Helper
 
-[![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/zlangbert/datadog-agent-secrets-helper.svg)](https://hub.docker.com/r/zlangbert/datadog-agent-secrets-helper)
+[![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/zlangbert/datadog-agent-secrets-helper)](https://hub.docker.com/r/zlangbert/datadog-agent-secrets-helper)
+[![Go Report Card](https://goreportcard.com/badge/github.com/zlangbert/datadog-agent-secrets-helper)](https://goreportcard.com/report/github.com/zlangbert/datadog-agent-secrets-helper)
 
 The [Datadog Agent](https://github.com/DataDog/datadog-agent) often needs access to sensitive values in its 
 configuration to preform checks against protected resources. As check configuration is often stored in version control

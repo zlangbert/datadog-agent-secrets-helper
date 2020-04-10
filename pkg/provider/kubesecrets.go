@@ -18,10 +18,12 @@ var (
 	idPattern = regexp.MustCompile(`^(?P<namespace>.+)/(?P<name>.+)$`)
 )
 
+// KubeSecretsProvider a provider for resolving secrets using Kubernetes secrets
 type KubeSecretsProvider struct {
 	client *kubernetes.Clientset
 }
 
+// NewKubeSecretsProvider creates a new kubernetes secrets provider
 func NewKubeSecretsProvider(cfg *config.HelperConfig) (provider SecretProvider, err error) {
 
 	// build client, first try kubeconfig, then in-cluster
@@ -57,6 +59,7 @@ func NewKubeSecretsProvider(cfg *config.HelperConfig) (provider SecretProvider, 
 	return provider, nil
 }
 
+// Resolve resolves a list of secret handles and returns resolution results
 func (provider *KubeSecretsProvider) Resolve(handles []*secret.Handle) (results map[string]secret.Result) {
 
 	// TODO: If multiple keys are desired under one secret, that secret is retrieved multiple times. Optimize by
@@ -66,17 +69,17 @@ func (provider *KubeSecretsProvider) Resolve(handles []*secret.Handle) (results 
 	for _, handle := range handles {
 
 		// extract parts
-		match := idPattern.FindStringSubmatch(handle.Id)
+		match := idPattern.FindStringSubmatch(handle.ID)
 		if match == nil {
 			secretResults[handle.Handle] = secret.Result{
-				Error: fmt.Sprintf("unexpected handle id format: %v", handle.Id),
+				Error: fmt.Sprintf("unexpected handle id format: %v", handle.ID),
 			}
 			continue
 		}
 
 		var (
 			namespace = match[1]
-			name = match[2]
+			name      = match[2]
 		)
 
 		// get secret

@@ -10,10 +10,12 @@ import (
 	"github.com/zlangbert/datadog-agent-secrets-helper/pkg/secret"
 )
 
+// AwsSecretsManagerProvider a provider for resolving secrets using AWS SecretsManager
 type AwsSecretsManagerProvider struct {
 	manager *secretsmanager.SecretsManager
 }
 
+// NewAwsSecretsManagerProvider create a new aws secretsmanager provider
 func NewAwsSecretsManagerProvider(config *config.HelperConfig) (provider SecretProvider, err error) {
 
 	// build aws session
@@ -29,6 +31,7 @@ func NewAwsSecretsManagerProvider(config *config.HelperConfig) (provider SecretP
 	return provider, nil
 }
 
+// Resolve resolves a list of secret handles and returns resolution results
 func (provider *AwsSecretsManagerProvider) Resolve(handles []*secret.Handle) (results map[string]secret.Result) {
 
 	// TODO: If multiple keys are desired under one secret, that secret is retrieved multiple times. Optimize by
@@ -39,7 +42,7 @@ func (provider *AwsSecretsManagerProvider) Resolve(handles []*secret.Handle) (re
 
 		// get secret from secrets manager
 		s, err := provider.manager.GetSecretValue(&secretsmanager.GetSecretValueInput{
-			SecretId: &handle.Id,
+			SecretId: &handle.ID,
 		})
 		if err != nil {
 			secretResults[handle.Handle] = secret.Result{

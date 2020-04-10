@@ -12,3 +12,10 @@ build/$(BINARY): $(SOURCES)
 .PHONY: format
 format:
 	go fmt ./...
+
+.PHONY: lint
+lint:
+	golint ./...
+
+.PHONY: check
+check: format lint

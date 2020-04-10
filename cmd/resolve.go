@@ -22,6 +22,7 @@ var (
 	providersCache = map[string]provider.SecretProvider{}
 )
 
+// Resolve parses args options and starts the secret resolution process for this invocation
 func Resolve() {
 
 	var resolve = &cobra.Command{
@@ -83,8 +84,8 @@ func resolve(cfg *config.HelperConfig) {
 	groups := groupHandlesByProvider(handles)
 
 	// resolve handle groups
-	for providerId, handles := range groups {
-		for h, result := range resolveGroup(cfg, providerId, handles) {
+	for providerID, handles := range groups {
+		for h, result := range resolveGroup(cfg, providerID, handles) {
 			results[h] = result
 		}
 	}
@@ -112,10 +113,10 @@ func groupHandlesByProvider(handles []*secret.Handle) map[string][]*secret.Handl
 	return groups
 }
 
-func resolveGroup(cfg *config.HelperConfig, providerId string, handles []*secret.Handle) map[string]secret.Result {
+func resolveGroup(cfg *config.HelperConfig, providerID string, handles []*secret.Handle) map[string]secret.Result {
 	results := map[string]secret.Result{}
 
-	p, err := provider.GetProvider(cfg, providerId)
+	p, err := provider.GetProvider(cfg, providerID)
 	if err != nil {
 
 		// if we failed to initialize the provider then return that error for all handles

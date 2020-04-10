@@ -13,7 +13,7 @@ var (
 type Handle struct {
 	Handle   string
 	Provider string
-	Id       string
+	ID       string
 	Key      string
 }
 
@@ -30,7 +30,7 @@ func ParseHandle(h string) (handle *Handle, err error) {
 	handle = &Handle{
 		Handle:   h,
 		Provider: match[1],
-		Id:       match[2],
+		ID:       match[2],
 		Key:      match[3],
 	}
 
