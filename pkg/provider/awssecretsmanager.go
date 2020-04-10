@@ -29,7 +29,7 @@ func NewAwsSecretsManagerProvider(config *config.HelperConfig) (provider SecretP
 	return provider, nil
 }
 
-func (provider *AwsSecretsManagerProvider) Resolve(handles []*secret.Handle) (results map[string]secret.Result, err error) {
+func (provider *AwsSecretsManagerProvider) Resolve(handles []*secret.Handle) (results map[string]secret.Result) {
 
 	// TODO: If multiple keys are desired under one secret, that secret is retrieved multiple times. Optimize by
 	//  getting each secret only once
@@ -72,5 +72,5 @@ func (provider *AwsSecretsManagerProvider) Resolve(handles []*secret.Handle) (re
 		}
 	}
 
-	return secretResults, nil
+	return secretResults
 }

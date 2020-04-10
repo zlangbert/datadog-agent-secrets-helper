@@ -34,12 +34,5 @@ func ParseHandle(h string) (handle *Handle, err error) {
 		Key:      match[3],
 	}
 
-	// validate provider
-	switch handle.Provider {
-	case "aws-sm":
-	default:
-		return nil, fmt.Errorf("unexpected provider in handle: %s", h)
-	}
-
 	return handle, nil
 }

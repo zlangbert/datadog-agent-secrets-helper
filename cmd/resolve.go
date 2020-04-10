@@ -18,6 +18,10 @@ type secretsPayload struct {
 	Handles []string `json:"secrets"`
 }
 
+var (
+	providersCache = map[string]provider.SecretProvider{}
+)
+
 func Resolve() {
 
 	var resolve = &cobra.Command{
@@ -37,7 +41,7 @@ func Resolve() {
 	}
 }
 
-func resolve(config *config.HelperConfig) {
+func resolve(cfg *config.HelperConfig) {
 
 	// ensure there is data being sent, otherwise the following read could hang waiting for input
 	stat, _ := os.Stdin.Stat()
@@ -57,35 +61,32 @@ func resolve(config *config.HelperConfig) {
 		log.Fatalf("could not deseralize input: %s", err)
 	}
 
-	// build provider
-	secretProvider, err := provider.NewAwsSecretsManagerProvider(config)
-	if err != nil {
-		log.Fatalf("error initializing provider: %s", err)
-	}
+	// result accumulation
+	results := map[string]secret.Result{}
 
 	// parse handles
 	handles := []*secret.Handle{}
-	parsingErrors := map[string]secret.Result{}
 	for _, h := range secrets.Handles {
 		handle, err := secret.ParseHandle(h)
 		if err != nil {
-			parsingErrors[h] = secret.Result{
+			results[h] = secret.Result{
 				Error: fmt.Sprintf("error parsing secret handle: %v", err),
 			}
 			continue
 		}
+
+		// append any parsed handles
 		handles = append(handles, handle)
 	}
 
-	// resolve handles
-	results, err := secretProvider.Resolve(handles)
-	if err != nil {
-		log.Fatalf("error resolving secrets: %s", err)
-	}
+	// group handles
+	groups := groupHandlesByProvider(handles)
 
-	// merge results with any parsing errors
-	for k, v := range parsingErrors {
-		results[k] = v
+	// resolve handle groups
+	for providerId, handles := range groups {
+		for h, result := range resolveGroup(cfg, providerId, handles) {
+			results[h] = result
+		}
 	}
 
 	// write result to stdout
@@ -94,4 +95,40 @@ func resolve(config *config.HelperConfig) {
 		log.Fatalf("could not serialize result: %s", err)
 	}
 	fmt.Printf(string(output))
+}
+
+func groupHandlesByProvider(handles []*secret.Handle) map[string][]*secret.Handle {
+	groups := map[string][]*secret.Handle{}
+	for _, h := range handles {
+		if _, ok := groups[h.Provider]; ok {
+			// append h to existing list
+			groups[h.Provider] = append(groups[h.Provider], h)
+		} else {
+			// create new group
+			groups[h.Provider] = []*secret.Handle{h}
+		}
+	}
+
+	return groups
+}
+
+func resolveGroup(cfg *config.HelperConfig, providerId string, handles []*secret.Handle) map[string]secret.Result {
+	results := map[string]secret.Result{}
+
+	p, err := provider.GetProvider(cfg, providerId)
+	if err != nil {
+
+		// if we failed to initialize the provider then return that error for all handles
+		for _, handle := range handles {
+			results[handle.Handle] = secret.Result{
+				Error: fmt.Sprintf("error initializing provider: %v", err),
+			}
+		}
+	} else {
+
+		// resolve group with provider
+		results = p.Resolve(handles)
+	}
+
+	return results
 }
