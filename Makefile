@@ -8,3 +8,7 @@ build: build/$(BINARY)
 
 build/$(BINARY): $(SOURCES)
 	CGO_ENABLED=0 go build -o build/$(BINARY) $(BUILD_FLAGS) -ldflags "$(LDFLAGS)" .
+
+.PHONY: format
+format:
+	go fmt ./...

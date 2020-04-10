@@ -3,9 +3,10 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/spf13/cobra"
+	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/config"
 	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/provider"
+	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/secret"
 	"io/ioutil"
 	"log"
 	"os"
@@ -24,25 +25,11 @@ func Resolve() {
 		Short: "Datadog agent secrets provider backed by AWS Secrets Manager",
 		Run: func(cmd *cobra.Command, args []string) {
 
-			config := &provider.AwsConfig{
-				Region: cmd.Flag("region").Value.String(),
-				Credentials: credentials.NewStaticCredentials(
-					cmd.Flag("access-key-id").Value.String(),
-					cmd.Flag("secret-access-key").Value.String(),
-					"",
-				),
-			}
+			config := &config.HelperConfig{}
 
 			resolve(config)
 		},
 	}
-
-	resolve.PersistentFlags().String("region", "", "aws region e.g 'us-west-2'")
-	_ = resolve.MarkPersistentFlagRequired("region")
-	resolve.PersistentFlags().String("access-key-id", "", "aws access key id")
-	_ = resolve.MarkPersistentFlagRequired("access-key-id")
-	resolve.PersistentFlags().String("secret-access-key", "", "aws secret access key")
-	_ = resolve.MarkPersistentFlagRequired("secret-access-key")
 
 	err := resolve.Execute()
 	if err != nil {
@@ -50,7 +37,7 @@ func Resolve() {
 	}
 }
 
-func resolve(config *provider.AwsConfig) {
+func resolve(config *config.HelperConfig) {
 
 	// ensure there is data being sent, otherwise the following read could hang waiting for input
 	stat, _ := os.Stdin.Stat()
@@ -76,10 +63,29 @@ func resolve(config *provider.AwsConfig) {
 		log.Fatalf("error initializing provider: %s", err)
 	}
 
+	// parse handles
+	handles := []*secret.Handle{}
+	parsingErrors := map[string]secret.Result{}
+	for _, h := range secrets.Handles {
+		handle, err := secret.ParseHandle(h)
+		if err != nil {
+			parsingErrors[h] = secret.Result{
+				Error: fmt.Sprintf("error parsing secret handle: %v", err),
+			}
+			continue
+		}
+		handles = append(handles, handle)
+	}
+
 	// resolve handles
-	results, err := secretProvider.Resolve(secrets.Handles)
+	results, err := secretProvider.Resolve(handles)
 	if err != nil {
 		log.Fatalf("error resolving secrets: %s", err)
+	}
+
+	// merge results with any parsing errors
+	for k, v := range parsingErrors {
+		results[k] = v
 	}
 
 	// write result to stdout

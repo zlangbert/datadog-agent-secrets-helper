@@ -3,10 +3,10 @@ package provider
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/pkg/errors"
+	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/config"
 	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/secret"
 )
 
@@ -14,13 +14,10 @@ type AwsSecretsManagerProvider struct {
 	manager *secretsmanager.SecretsManager
 }
 
-func NewAwsSecretsManagerProvider(config *AwsConfig) (provider SecretProvider, err error) {
+func NewAwsSecretsManagerProvider(config *config.HelperConfig) (provider SecretProvider, err error) {
 
 	// build aws session
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String(config.Region),
-		Credentials: config.Credentials,
-	})
+	sess, err := session.NewSession()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create AWS session")
 	}
@@ -32,22 +29,13 @@ func NewAwsSecretsManagerProvider(config *AwsConfig) (provider SecretProvider, e
 	return provider, nil
 }
 
-func (provider *AwsSecretsManagerProvider) Resolve(handles []string) (results map[string]secret.Result, err error) {
+func (provider *AwsSecretsManagerProvider) Resolve(handles []*secret.Handle) (results map[string]secret.Result, err error) {
 
 	// TODO: If multiple keys are desired under one secret, that secret is retrieved multiple times. Optimize by
 	//  getting each secret only once
 	// evaluate each handle
 	secretResults := map[string]secret.Result{}
-	for _, h := range handles {
-
-		// parse handle
-		handle, err := secret.ParseHandle(h)
-		if err != nil {
-			secretResults[h] = secret.Result{
-				Error: fmt.Sprintf("error parsing secret handle: %v", err),
-			}
-			continue
-		}
+	for _, handle := range handles {
 
 		// get secret from secrets manager
 		s, err := provider.manager.GetSecretValue(&secretsmanager.GetSecretValueInput{
