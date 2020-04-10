@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/spf13/cobra"
-	"github.nike.com/zlangb/dd-secrets-provider-secretsmanager/pkg/provider"
+	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/provider"
 	"io/ioutil"
 	"log"
 	"os"

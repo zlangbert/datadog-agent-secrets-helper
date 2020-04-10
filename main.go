@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.nike.com/zlangb/dd-secrets-provider-secretsmanager/cmd"
+	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/cmd"
 )
 
 func main() {
