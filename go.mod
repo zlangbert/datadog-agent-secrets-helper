@@ -1,4 +1,4 @@
-module github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager
+module github.com/zlangbert/datadog-agent-secrets-helper
 
 go 1.14
 

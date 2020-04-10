@@ -1,4 +1,4 @@
-BINARY        ?= datadog-secrets-provider-aws-secretsmanager
+BINARY        ?= datadog-agent-secrets-helper
 SOURCES        = $(shell find . -name '*.go')
 BUILD_FLAGS   ?= -v
 LDFLAGS       ?= -w -s

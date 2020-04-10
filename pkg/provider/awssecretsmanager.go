@@ -6,8 +6,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/secretsmanager"
 	"github.com/pkg/errors"
-	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/config"
-	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/secret"
+	"github.com/zlangbert/datadog-agent-secrets-helper/pkg/config"
+	"github.com/zlangbert/datadog-agent-secrets-helper/pkg/secret"
 )
 
 type AwsSecretsManagerProvider struct {

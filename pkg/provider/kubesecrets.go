@@ -3,8 +3,8 @@ package provider
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/config"
-	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/secret"
+	"github.com/zlangbert/datadog-agent-secrets-helper/pkg/config"
+	"github.com/zlangbert/datadog-agent-secrets-helper/pkg/secret"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"

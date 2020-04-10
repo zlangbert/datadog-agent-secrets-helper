@@ -10,8 +10,8 @@ RUN make build
 FROM busybox:latest
 LABEL maintainer="Zach Langbert <zach.langbert@gmail.com>"
 
-COPY --from=builder /workspace/build/datadog-secrets-provider-aws-secretsmanager /bin/
+COPY --from=builder /workspace/build/datadog-agent-secrets-helper /bin/
 
-RUN chmod 0700 /bin/datadog-secrets-provider-aws-secretsmanager
+RUN chmod 0500 /bin/datadog-agent-secrets-helper
 
-ENTRYPOINT ["/bin/datadog-secrets-provider-aws-secretsmanager"]
+ENTRYPOINT ["/bin/datadog-agent-secrets-helper"]

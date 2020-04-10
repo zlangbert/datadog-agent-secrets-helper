@@ -1,6 +1,6 @@
-# AWS Secrets Manager Provider for the Datadog Agent
+# Datadog Agent Secrets Helper
 
-[![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/zlangbert/datadog-secrets-provider-aws-secretsmanager.svg)](https://hub.docker.com/r/zlangbert/datadog-secrets-provider-aws-secretsmanager)
+[![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/zlangbert/datadog-agent-secrets-helper.svg)](https://hub.docker.com/r/zlangbert/datadog-agent-secrets-helper)
 
 The [Datadog Agent](https://github.com/DataDog/datadog-agent) often needs access to sensitive values in its 
 configuration to preform checks against protected resources. As check configuration is often stored in version control
@@ -9,7 +9,6 @@ is necessary.
 
 The agent offers a flexible method to define and retrieve secret values in agent or check configuration described 
 [here](https://github.com/DataDog/datadog-agent/blob/master/docs/agent/secrets.md). This repository contains an
-implementation of a secrets provider backed by [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/), allowing
-agent configuration to reference and retrieve secrets stored in Secrets Manager.
+implementation of a secrets backend with support for multiple secrets providers. 
 
 TODO: installation and usage docs

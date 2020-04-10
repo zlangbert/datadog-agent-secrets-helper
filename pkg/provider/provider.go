@@ -2,8 +2,8 @@ package provider
 
 import (
 	"github.com/pkg/errors"
-	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/config"
-	"github.com/zlangbert/datadog-secrets-provider-aws-secretsmanager/pkg/secret"
+	"github.com/zlangbert/datadog-agent-secrets-helper/pkg/config"
+	"github.com/zlangbert/datadog-agent-secrets-helper/pkg/secret"
 )
 
 type SecretProvider interface {
