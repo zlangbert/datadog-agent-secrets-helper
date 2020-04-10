@@ -15,6 +15,8 @@ func GetProvider(cfg *config.HelperConfig, id string) (p SecretProvider, err err
 	switch id {
 	case "aws-sm":
 		p, err = NewAwsSecretsManagerProvider(cfg)
+	case "kube-secret":
+		p, err = NewKubeSecretsProvider(cfg)
 	default:
 		err = errors.Errorf("unknown provider: %s", id)
 	}
