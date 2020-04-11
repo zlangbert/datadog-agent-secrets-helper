@@ -18,10 +18,6 @@ type secretsPayload struct {
 	Handles []string `json:"secrets"`
 }
 
-var (
-	providersCache = map[string]provider.SecretProvider{}
-)
-
 // Resolve parses args options and starts the secret resolution process for this invocation
 func Resolve() {
 
